@@ -46,11 +46,22 @@ export function ChatWindow() {
     }, [messages]);
 
     const handleSubmit = async (payload: FormData) => {
-        var cpyMessages = [...messages];
-        var prompt = payload.get("prompt")?.toString() ?? "";
-        cpyMessages.push({ id: 9, role: 'user', content: prompt })
-        setMassages(cpyMessages);
-        console.log("lelele");
+        const prompt = payload.get("prompt")?.toString() ?? "";
+        if (!prompt.trim()) return; // Don't submit empty messages
+        
+        // Generate a unique ID for the message
+        const newMessageId = messages.length > 0 
+            ? Math.max(...messages.map(m => m.id)) + 1 
+            : 1;
+        
+        // Immediately update UI with user message
+        setMassages(prev => [...prev, {
+            id: newMessageId,
+            role: 'user',
+            content: prompt
+        }]);
+
+        // Then process the form action
         formAction(payload);
     }
 
