@@ -48,9 +48,13 @@ export function ChatWindow() {
         }
     }, [messages]);
 
-    const handleSubmit = async (payload: FormData) => {
-        const prompt = payload.get("prompt")?.toString() ?? "";
-        if (!prompt.trim()) return; // Don't submit empty messages
+    const handleSubmit = async (e?: React.FormEvent) => {
+        e?.preventDefault();
+        
+        if (!inputValue.trim()) return; // Don't submit empty messages
+        
+        const formData = new FormData();
+        formData.append("prompt", inputValue);
         
         // Generate a unique ID for the message
         const newMessageId = messages.length > 0 
@@ -61,28 +65,18 @@ export function ChatWindow() {
         setMessages(prev => [...prev, {
             id: newMessageId,
             role: 'user',
-            content: prompt
+            content: inputValue
         }]);
 
-        // Then process the form action
-        formAction(payload);
-    }
-
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append("prompt", inputValue);
-        handleSubmit(formData);
+        // Clear input and process the form action
         setInputValue("");
+        formAction(formData);
     }
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            const formData = new FormData();
-            formData.append("prompt", inputValue);
-            handleSubmit(formData);
-            setInputValue("");
+            handleSubmit();
         }
     }
 
@@ -113,7 +107,7 @@ export function ChatWindow() {
                 <CardFooter className="shrink-0 pt-4">
                     <form 
                         className="flex w-full items-start space-x-2" 
-                        onSubmit={onSubmit}
+                        onSubmit={handleSubmit}
                     >
                         <Textarea
                             value={inputValue}
