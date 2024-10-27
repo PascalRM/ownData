@@ -68,6 +68,24 @@ export function ChatWindow() {
         formAction(payload);
     }
 
+    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append("prompt", inputValue);
+        handleSubmit(formData);
+        setInputValue("");
+    }
+
+    const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append("prompt", inputValue);
+            handleSubmit(formData);
+            setInputValue("");
+        }
+    }
+
     return (
         <div className="flex-1 flex flex-col overflow-hidden p-4">
             <Card className="flex flex-col flex-1 overflow-hidden b">
@@ -95,13 +113,7 @@ export function ChatWindow() {
                 <CardFooter className="shrink-0 pt-4">
                     <form 
                         className="flex w-full items-start space-x-2" 
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            const formData = new FormData();
-                            formData.append("prompt", inputValue);
-                            handleSubmit(formData);
-                            setInputValue("");
-                        }}
+                        onSubmit={onSubmit}
                     >
                         <Textarea
                             value={inputValue}
@@ -109,15 +121,7 @@ export function ChatWindow() {
                             placeholder="Type your message here..."
                             className="flex-1 min-h-[38px]"
                             rows={1}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    const formData = new FormData();
-                                    formData.append("prompt", inputValue);
-                                    handleSubmit(formData);
-                                    setInputValue("");
-                                }
-                            }}
+                            onKeyDown={onKeyDown}
                         />
                         <Button type="submit" size="icon" className="shrink-0">
                             <Send className="h-4 w-4" />
