@@ -71,11 +71,15 @@ export function ChatWindow() {
             date: new Date().toISOString()
         }]);
 
-        // Clear input and process the form action
+        // Clear input
         setInputValue("");
-        setIsLoading(true);
-        await formAction(formData);
-        setIsLoading(false);
+        
+        try {
+            setIsLoading(true);
+            await formAction(formData);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -121,6 +125,7 @@ export function ChatWindow() {
                             className="flex-1 min-h-[38px]"
                             rows={1}
                             onKeyDown={onKeyDown}
+                            disabled={isLoading}
                         />
                         <Button type="submit" size="icon" className="shrink-0" disabled={isLoading}>
                             {isLoading ? (
