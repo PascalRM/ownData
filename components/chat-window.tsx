@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { Send } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import { useFormState } from "react-dom";
 import { prompt } from "@/app/actions/chat-actions";
 
@@ -24,6 +24,7 @@ const data = {
 
 export function ChatWindow() {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [state, formAction] = useFormState(prompt, { error: "", answer: "", context: [] });
     const [messages, setMessages] = useState([...data.chatMessages]);
     const [inputValue, setInputValue] = useState("");
@@ -72,7 +73,9 @@ export function ChatWindow() {
 
         // Clear input and process the form action
         setInputValue("");
-        formAction(formData);
+        setIsLoading(true);
+        await formAction(formData);
+        setIsLoading(false);
     }
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -119,8 +122,12 @@ export function ChatWindow() {
                             rows={1}
                             onKeyDown={onKeyDown}
                         />
-                        <Button type="submit" size="icon" className="shrink-0">
-                            <Send className="h-4 w-4" />
+                        <Button type="submit" size="icon" className="shrink-0" disabled={isLoading}>
+                            {isLoading ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <Send className="h-4 w-4" />
+                            )}
                             <span className="sr-only">Send</span>
                         </Button>
                     </form>
