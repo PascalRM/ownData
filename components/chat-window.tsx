@@ -6,7 +6,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Loader2, Send } from "lucide-react";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import { prompt } from "@/app/actions/chat-actions";
 
 const data = {
@@ -24,8 +24,8 @@ const data = {
 
 export function ChatWindow() {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [state, formAction] = useFormState(prompt, { error: "", answer: "", context: [] });
+
     const [messages, setMessages] = useState([...data.chatMessages]);
     const [inputValue, setInputValue] = useState("");
 
@@ -52,17 +52,17 @@ export function ChatWindow() {
 
     const handleSubmit = async (e?: React.FormEvent) => {
         e?.preventDefault();
-        
+
         if (!inputValue.trim()) return; // Don't submit empty messages
-        
+
         const formData = new FormData();
         formData.append("prompt", inputValue);
-        
+
         // Generate a unique ID for the message
-        const newMessageId = messages.length > 0 
-            ? Math.max(...messages.map(m => m.id)) + 1 
+        const newMessageId = messages.length > 0
+            ? Math.max(...messages.map(m => m.id)) + 1
             : 1;
-        
+
         // Immediately update UI with user message
         setMessages(prev => [...prev, {
             id: newMessageId,
@@ -73,13 +73,9 @@ export function ChatWindow() {
 
         // Clear input
         setInputValue("");
-        
-        try {
-            setIsLoading(true);
-            await formAction(formData);
-        } finally {
-            setIsLoading(false);
-        }
+
+        formAction(formData);
+
     }
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -87,6 +83,21 @@ export function ChatWindow() {
             e.preventDefault();
             handleSubmit();
         }
+    }
+
+    const SubmitButton = () => {
+        const { pending } = useFormStatus();
+        console.log("pending", pending);
+        return (<>
+            <Button type="submit" size="icon" className="shrink-0" disabled={pending}>
+                {pending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                    <Send className="h-4 w-4" />
+                )}
+                <span className="sr-only">Send</span>
+            </Button>
+        </>);
     }
 
     return (
@@ -114,8 +125,8 @@ export function ChatWindow() {
                     </ScrollArea>
                 </CardContent>
                 <CardFooter className="shrink-0 pt-4">
-                    <form 
-                        className="flex w-full items-start space-x-2" 
+                    <form
+                        className="flex w-full items-start space-x-2"
                         onSubmit={handleSubmit}
                     >
                         <Textarea
@@ -125,16 +136,8 @@ export function ChatWindow() {
                             className="flex-1 min-h-[38px]"
                             rows={1}
                             onKeyDown={onKeyDown}
-                            disabled={isLoading}
                         />
-                        <Button type="submit" size="icon" className="shrink-0" disabled={isLoading}>
-                            {isLoading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <Send className="h-4 w-4" />
-                            )}
-                            <span className="sr-only">Send</span>
-                        </Button>
+                        <SubmitButton />
                     </form>
                 </CardFooter>
             </Card>
