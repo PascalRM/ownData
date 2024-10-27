@@ -11,7 +11,7 @@ import { prompt } from "@/app/actions/chat-actions";
 
 const data = {
     chatMessages: [
-        { id: 1, role: 'assistant', content: 'Hi, how can I help you?' },
+        { id: 1, role: 'assistant', content: 'Hi, how can I help you?', date: new Date().toISOString() },
         // { id: 2, role: 'assistant', content: 'Of course! I\'d be happy to help. What\'s your question about React?' },
         // { id: 3, role: 'user', content: 'I\'m having trouble understanding how to use the useEffect hook. Can you explain it?' },
         // { id: 4, role: 'assistant', content: 'The useEffect hook in React is used for side effects in function components. It\'s similar to componentDidMount, componentDidUpdate, and componentWillUnmount lifecycle methods combined. Here\'s a basic example:\n\nuseEffect(() => {\n  // This code runs after every render\n  console.log("Component rendered");\n\n  return () => {\n    // This is the cleanup function\n    console.log("Component will unmount or re-render");\n  };\n}, []); // Empty dependency array means this effect runs once on mount\n\nThe first argument is a function that contains the side effect. The second argument is an array of dependencies. If you want the effect to run only once when the component mounts, pass an empty array.' },
@@ -34,7 +34,8 @@ export function ChatWindow() {
             setMessages(prev => [...prev, {
                 id: Math.max(...prev.map(m => m.id)) + 1,
                 role: 'assistant',
-                content: state.answer
+                content: state.answer,
+                date: new Date().toISOString()
             }]);
         }
     }, [state]);
@@ -65,7 +66,8 @@ export function ChatWindow() {
         setMessages(prev => [...prev, {
             id: newMessageId,
             role: 'user',
-            content: inputValue
+            content: inputValue,
+            date: new Date().toISOString()
         }]);
 
         // Clear input and process the form action
@@ -97,7 +99,7 @@ export function ChatWindow() {
                                         </div>
                                     </div>
                                     <span className="mt-1 text-xs text-muted-foreground">
-                                        {m.role === 'user' ? 'You' : 'AI'} • {new Date().toLocaleTimeString()}
+                                        {m.role === 'user' ? 'You' : 'AI'} • {new Date(m.date).toLocaleString()}
                                     </span>
                                 </div>
                             ))}
