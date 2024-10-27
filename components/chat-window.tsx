@@ -25,16 +25,19 @@ const data = {
 export function ChatWindow() {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const [state, formAction] = useFormState(prompt, { error: "", answer: "", context: [] });
-    const [messages, setMassages] = useState([...data.chatMessages]);
+    const [messages, setMessages] = useState([...data.chatMessages]);
+    const [inputValue, setInputValue] = useState("");
 
     useEffect(() => {
         console.log("state", state);
-        if (state.answer != "") {
-            var cpyMessages = [...messages];
-            cpyMessages.push({ id: 10, role: 'assistant', content: state.answer })
-            setMassages(cpyMessages);
+        if (state.answer !== "") {
+            setMessages(prev => [...prev, {
+                id: Math.max(...prev.map(m => m.id)) + 1,
+                role: 'assistant',
+                content: state.answer
+            }]);
         }
-    }, [state])
+    }, [state]);
 
     useEffect(() => {
         if (scrollAreaRef.current) {
@@ -90,19 +93,31 @@ export function ChatWindow() {
                     </ScrollArea>
                 </CardContent>
                 <CardFooter className="shrink-0 pt-4">
-                    <form className="flex w-full items-start space-x-2" action={handleSubmit}>
+                    <form 
+                        className="flex w-full items-start space-x-2" 
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            const formData = new FormData();
+                            formData.append("prompt", inputValue);
+                            handleSubmit(formData);
+                            setInputValue("");
+                        }}
+                    >
                         <Textarea
-                            id="prompt"
-                            name="prompt"
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
                             placeholder="Type your message here..."
                             className="flex-1 min-h-[38px]"
                             rows={1}
-                        // onKeyDown={(e) => {
-                        //     if (e.key === 'Enter' && !e.shiftKey) {
-                        //         e.preventDefault();
-                        //         handleSubmit(e);
-                        //     }
-                        // }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    const formData = new FormData();
+                                    formData.append("prompt", inputValue);
+                                    handleSubmit(formData);
+                                    setInputValue("");
+                                }
+                            }}
                         />
                         <Button type="submit" size="icon" className="shrink-0">
                             <Send className="h-4 w-4" />
