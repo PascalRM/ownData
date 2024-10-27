@@ -58,7 +58,7 @@ export function ChatWindow() {
             : 1;
         
         // Immediately update UI with user message
-        setMassages(prev => [...prev, {
+        setMessages(prev => [...prev, {
             id: newMessageId,
             role: 'user',
             content: prompt
