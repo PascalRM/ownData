@@ -50,7 +50,7 @@ export function ChatWindow() {
         }
     }, [messages]);
 
-    const handleSubmit = async (payload: FormData) => {
+    const handleSubmit = async () => {
         if (!inputValue.trim()) return; // Don't submit empty messages
 
         const formData = new FormData();
