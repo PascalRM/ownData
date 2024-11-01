@@ -1,6 +1,6 @@
 version: '3.8'
 
-name: OwnData 
+name: own-data 
 services:
   postgres:
     build:
@@ -14,7 +14,7 @@ services:
 
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=frother$123
+      - POSTGRES_PASSWORD=frother123
       - POSTGRES_DB=OwnData
 volumes:
   postgres_data:

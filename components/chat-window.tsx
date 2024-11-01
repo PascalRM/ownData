@@ -8,19 +8,20 @@ import { Button } from "./ui/button";
 import { Loader2, Send } from "lucide-react";
 import { useFormState, useFormStatus } from "react-dom";
 import { prompt } from "@/app/actions/chat-actions";
+import { formatDate } from "@/lib/utils";
 
 type Message = {
     id: number;
     role: string;
     content: string;
-    date: string;
+    date: Date;
 }
 
 export function ChatWindow() {
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
     const [state, formAction] = useFormState(prompt, { error: "", answer: "", context: [] });
-    const [messages, setMessages] = useState<Message[]>([{ id: 1, role: 'assistant', content: 'Hi, how can I help you?', date: new Date().toISOString() }]);
+    const [messages, setMessages] = useState<Message[]>([{ id: 1, role: 'assistant', content: 'Hi, how can I help you?', date: new Date()}]);
     const [optimisticMessages, addOptimisticMessage] = useOptimistic(
         messages,
         (state, newMessage: Message) => [
@@ -36,7 +37,7 @@ export function ChatWindow() {
                 id: Math.max(...prev.map(m => m.id)) + 1,
                 role: 'assistant',
                 content: state.answer,
-                date: new Date().toISOString()
+                date: new Date()
             }]);
         }
     }, [state]);
@@ -65,7 +66,7 @@ export function ChatWindow() {
             id: newMessageId,
             role: 'user',
             content: inputValue,
-            date: new Date().toISOString()
+            date: new Date()
         };
 
         // Clear input
@@ -98,6 +99,8 @@ export function ChatWindow() {
         </>);
     }
 
+    const fnDate = (d: string) => formatDate(d);
+
     return (
         <div className="flex-1 flex flex-col overflow-hidden p-4">
             <Card className="flex flex-col flex-1 overflow-hidden b">
@@ -115,7 +118,7 @@ export function ChatWindow() {
                                         </div>
                                     </div>
                                     <span className="mt-1 text-xs text-muted-foreground">
-                                        {m.role === 'user' ? 'You' : 'AI'} • {new Date(m.date).toLocaleString()}
+                                        {m.role === 'user' ? 'You' : 'AI'}
                                     </span>
                                 </div>
                             ))}
