@@ -21,7 +21,7 @@ export function LoginForm() {
 
   async function login(e: React.FormEvent) {
     e.preventDefault();
-    
+
     // const { data, error } = await authClient.signUp.email({
     //   email: "pascal.ramanathan@gmail.com",
     //   password: "PascalRamanathan$123",
@@ -29,13 +29,13 @@ export function LoginForm() {
     // });
 
     setError("");
-    const { data, error } = await authClient.signIn.email({
+    const { error } = await authClient.signIn.email({
       email: email ? email : "",
       password: password ? password : "",
       callbackURL: "/"
     });
 
-    if(error && error.message) setError(error.message);
+    if (error && error.message) setError(error.message);
   }
 
   return (

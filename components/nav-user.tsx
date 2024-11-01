@@ -36,9 +36,7 @@ export function NavUser() {
   const { isMobile } = useSidebar()
   const router = useRouter()
   const {
-    data: session,
-    isPending, //loading state
-    error //error object
+    data: session
   } = authClient.useSession();
 
   const getInitials = (name: string) =>

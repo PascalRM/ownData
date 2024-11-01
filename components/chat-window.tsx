@@ -8,7 +8,6 @@ import { Button } from "./ui/button";
 import { Loader2, Send } from "lucide-react";
 import { useFormState, useFormStatus } from "react-dom";
 import { prompt } from "@/app/actions/chat-actions";
-import { formatDate } from "@/lib/utils";
 
 type Message = {
     id: number;
@@ -98,8 +97,6 @@ export function ChatWindow() {
             </Button>
         </>);
     }
-
-    const fnDate = (d: string) => formatDate(d);
 
     return (
         <div className="flex-1 flex flex-col overflow-hidden p-4">
